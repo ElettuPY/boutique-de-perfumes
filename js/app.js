@@ -7,7 +7,7 @@
 // CONFIGURACIÓN CRÍTICA - EDITAR AQUÍ
 // ============================================
 
-const API_URL = "https://script.google.com/macros/s/AKfycbx1isb9E_ddhXfWA8w2v4I4OcCy4sI-_iVULd6tkGlimZezHfd6KXM2LZd3rSzGixyF/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyt7UFotnN9HjHoNvhepdYgh_QRfwHn-hb__v2FQS1lBn5CAY58cEHDlFjx1pvitKwC/exec";
 const WHATSAPP_PHONE = "595974666221"; // Formato internacional para Paraguay (595 + número)
 
 // ============================================
@@ -223,7 +223,7 @@ function createProductCard(product, index) {
 
   const imageUrl = product.url_imagen 
     ? product.url_imagen + '&authuser=0&t=' + Date.now()
-    : 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22><rect fill=%22%23f5f5f5%22 width=%22400%22 height=%22400%22/><text x=%22200%22 y=%22200%22 text-anchor=%22middle%22 fill=%22%23ccc%22 font-size=%2240%22>🌸</text></svg>';
+    : 'imagenes/placeholder.jpg';
 
   return `
     <article class="product-card" style="animation-delay: ${index * 0.05}s">
