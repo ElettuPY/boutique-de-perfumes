@@ -11,7 +11,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyt7UFotnN9HjHoNvhepdYg
 const WHATSAPP_PHONE = "595974666221"; // Formato internacional para Paraguay (595 + número)
 
 // ============================================
-// VARIABLES DE ESTADO
+// VARIABLES DE ESTADO 
 // ============================================
 
 let allProducts = [];
@@ -113,7 +113,7 @@ async function fetchInventory() {
 
   try {
     const response = await fetch(API_URL);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -170,12 +170,12 @@ async function fetchInventory() {
     })).filter(p => p.name && (p.sku || p.name)); // Filtrado menos estricto para depuración
 
     filteredProducts = [...allProducts];
-    
+
     populateFilters();
     renderProducts(filteredProducts);
     hideLoading();
     showNotification('✨ Catálogo cargado correctamente', 'success');
-    
+
   } catch (error) {
     console.error('Error fetching inventory:', error);
     showNotification('Error al cargar el catálogo. Verifica la URL del endpoint JSON.', 'error');
@@ -196,7 +196,7 @@ function renderProducts(products) {
   }
 
   productsGrid.innerHTML = products.map((product, index) => createProductCard(product, index)).join('');
-  
+
   // Add lazy loading and error fallback for images
   document.querySelectorAll('.product-image').forEach(img => {
     img.addEventListener('load', () => img.classList.add('loaded'));
@@ -221,9 +221,7 @@ function createProductCard(product, index) {
   const isOutOfStock = product.stock === 0;
   const priceFormatted = formatPrice(product.price);
 
-  const imageUrl = product.url_imagen 
-    ? product.url_imagen + '&authuser=0&t=' + Date.now()
-    : 'imagenes/placeholder.jpg';
+  const imageUrl = formatDriveUrl(product.url_imagen);
 
   return `
     <article class="product-card" style="animation-delay: ${index * 0.05}s">
@@ -244,10 +242,10 @@ function createProductCard(product, index) {
           <span class="product-gender">${product.gender}</span>
         </div>
         <p class="product-price">${priceFormatted}</p>
-        ${!isOutOfStock ? 
-          `<p class="product-stock ${isLowStock ? 'low' : ''}">${isLowStock ? `Solo quedan ${product.stock} unidades` : '✓ Disponible'}</p>` :
-          `<p class="product-stock low">Sin stock disponible</p>`
-        }
+        ${!isOutOfStock ?
+      `<p class="product-stock ${isLowStock ? 'low' : ''}">${isLowStock ? `Solo quedan ${product.stock} unidades` : '✓ Disponible'}</p>` :
+      `<p class="product-stock low">Sin stock disponible</p>`
+    }
         <button 
           class="add-to-cart-btn" 
           data-sku="${product.sku}"
@@ -281,15 +279,15 @@ function populateFilters() {
   const genders = [...new Set(allProducts.map(p => p.gender).filter(Boolean))].sort();
 
   // Populate brand filter
-  filterBrand.innerHTML = '<option value="">Todas las marcas</option>' + 
+  filterBrand.innerHTML = '<option value="">Todas las marcas</option>' +
     brands.map(brand => `<option value="${brand}">${brand}</option>`).join('');
 
   // Populate type filter
-  filterType.innerHTML = '<option value="">Todos los tipos</option>' + 
+  filterType.innerHTML = '<option value="">Todos los tipos</option>' +
     types.map(type => `<option value="${type}">${type}</option>`).join('');
 
   // Populate gender filter
-  filterGender.innerHTML = '<option value="">Todos los géneros</option>' + 
+  filterGender.innerHTML = '<option value="">Todos los géneros</option>' +
     genders.map(gender => `<option value="${gender}">${gender}</option>`).join('');
 }
 
@@ -327,7 +325,7 @@ function applyFilters(searchQuery = '') {
         product.type,
         product.gender
       ].join(' ').toLowerCase();
-      
+
       if (!searchFields.includes(searchQuery)) {
         return false;
       }
@@ -335,10 +333,10 @@ function applyFilters(searchQuery = '') {
 
     // Brand filter
     if (brand && product.brand !== brand) return false;
-    
+
     // Type filter
     if (type && product.type !== type) return false;
-    
+
     // Gender filter
     if (gender && product.gender !== gender) return false;
 
@@ -384,7 +382,7 @@ function addToCart(sku) {
   updateCartUI();
   saveCart();
   showNotification(`✨ ${product.name} agregado`, 'success');
-  
+
   // Visual feedback on button
   const btn = document.querySelector(`.add-to-cart-btn[data-sku="${sku}"]`);
   if (btn) {
@@ -472,10 +470,8 @@ function updateCartUI() {
 }
 
 function createCartItem(item) {
-  const imageUrl = item.url_imagen 
-    ? item.url_imagen + '&authuser=0&t=' + Date.now()
-    : '';
-    
+  const imageUrl = formatDriveUrl(item.url_imagen);
+
   return `
     <div class="cart-item">
       <img class="cart-item-image" src="${imageUrl}" alt="${item.name}">
@@ -550,11 +546,23 @@ function generateWhatsAppMessage() {
 // UTILIDADES
 // ============================================
 
+function formatDriveUrl(url) {
+  if (!url) return '';
+  if (url.includes('drive.google.com') || url.includes('doc.google.com')) {
+    const match = url.match(/[?&]id=([^&]+)|\/d\/([^/]+)|\/file\/d\/([^/]+)/);
+    if (match) {
+      const fileId = match[1] || match[2] || match[3];
+      return `https://drive.google.com/thumbnail?id=${fileId}&authuser=0&t=${Date.now()}`;
+    }
+  }
+  return url + (url.includes('?') ? '&' : '?') + 'authuser=0&t=' + Date.now();
+}
+
 function formatPrice(price) {
-  return new Intl.NumberFormat('es-AR', {
+  return new Intl.NumberFormat('es-PY', {
     style: 'currency',
-    currency: 'ARS',
-    minimumFractionDigits: 2
+    currency: 'PYG',
+    minimumFractionDigits: 0
   }).format(price);
 }
 
