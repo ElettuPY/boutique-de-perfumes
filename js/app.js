@@ -221,13 +221,17 @@ function createProductCard(product, index) {
   const isOutOfStock = product.stock === 0;
   const priceFormatted = formatPrice(product.price);
 
+  const imageUrl = product.url_imagen 
+    ? product.url_imagen + '&authuser=0&t=' + Date.now()
+    : 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22><rect fill=%22%23f5f5f5%22 width=%22400%22 height=%22400%22/><text x=%22200%22 y=%22200%22 text-anchor=%22middle%22 fill=%22%23ccc%22 font-size=%2240%22>🌸</text></svg>';
+
   return `
     <article class="product-card" style="animation-delay: ${index * 0.05}s">
       <div class="product-image-container">
         ${isOutOfStock ? '<span class="product-badge">Agotado</span>' : ''}
         <img 
           class="product-image" 
-          src="${product.url_imagen || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22><rect fill=%22%23f5f5f5%22 width=%22400%22 height=%22400%22/><text x=%22200%22 y=%22200%22 text-anchor=%22middle%22 fill=%22%23ccc%22 font-size=%2240%22>🌸</text></svg>'}" 
+          src="${imageUrl}" 
           alt="${product.name}"
           loading="lazy"
         >
@@ -468,9 +472,13 @@ function updateCartUI() {
 }
 
 function createCartItem(item) {
+  const imageUrl = item.url_imagen 
+    ? item.url_imagen + '&authuser=0&t=' + Date.now()
+    : '';
+    
   return `
     <div class="cart-item">
-      <img class="cart-item-image" src="${item.url_imagen || ''}" alt="${item.name}">
+      <img class="cart-item-image" src="${imageUrl}" alt="${item.name}">
       <div class="cart-item-details">
         <h4 class="cart-item-name">${item.name}</h4>
         <p class="cart-item-brand">${item.brand}</p>
@@ -525,30 +533,15 @@ function handleCheckout() {
 }
 
 function generateWhatsAppMessage() {
-  const date = new Date().toLocaleDateString('es-AR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
-
-  let message = `🛍️ *Nuevo Pedido - Boutique Perfumes*\n\n`;
-  message += `📅 Fecha: ${date}\n\n`;
-  message += `*Productos:*\n`;
+  let message = `¡Hola! 👋 Me encantaron estos perfumes de la tienda y quiero pedirlos:\n\n`;
 
   cart.forEach((item, index) => {
-    const subtotal = item.price * item.quantity;
-    message += `\n${index + 1}. ${item.name}\n`;
-    message += `   Marca: ${item.brand}\n`;
-    message += `   SKU: ${item.sku}\n`;
-    message += `   Cantidad: ${item.quantity} × ${formatPrice(item.price)}\n`;
-    message += `   Subtotal: ${formatPrice(subtotal)}\n`;
+    message += `• ${item.name} (${item.brand}) - ${item.quantity} unidad${item.quantity > 1 ? 'es' : ''}\n`;
   });
 
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  message += `\n━━━━━━━━━━━━━━━━━━\n`;
-  message += `*TOTAL: ${formatPrice(total)}*\n`;
-  message += `━━━━━━━━━━━━━━━━━━\n\n`;
-  message += `¡Gracias por tu compra! 🌸`;
+  message += `\n💰 Total: ${formatPrice(total)}\n\n`;
+  message += `¿Me podrías comentar cómo coordinamos el pago y el envío? ¡Gracias! ✨`;
 
   return message;
 }

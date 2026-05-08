@@ -1205,3 +1205,36 @@ ul, ol {
   background: var(--color-accent-light);
   transform: translateY(-5px);
 }
+
+/* WhatsApp Consultas Button */
+.whatsapp-consultas-btn {
+  position: fixed;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: var(--color-white);
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  transition: var(--transition-normal);
+  z-index: 150;
+}
+
+.whatsapp-icon {
+  font-size: 1.2rem;
+}
+
+.whatsapp-text {
+  letter-spacing: 0.5px;
+}
+
+.whatsapp-consultas-btn:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
+}
