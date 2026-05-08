@@ -1,0 +1,5 @@
+note.env
+create_repo.py
+.antigravity/
+node_modules/
+.DS_Store

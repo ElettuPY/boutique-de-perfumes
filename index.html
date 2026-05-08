@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P&G | Perfumería Premium</title>
+  <meta name="description" content="P&G - Perfumería premium. Las mejores fragancias de nicho para vos.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="imagenes/Logo.png" type="image/png">
+</head>
+<body>
+  <!-- Decorative Elements -->
+  <div class="decoration decoration-1"></div>
+  <div class="decoration decoration-2"></div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p class="loading-text">Cargando colección...</p>
+  </div>
+
+  <header class="header" id="header">
+    <div class="header-content">
+      <a href="#" class="logo">
+        <img src="imagenes/Logo.png" alt="P&G Parfums" class="logo-img">
+      </a>
+      
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Buscar perfumes...">
+      </div>
+
+      <button class="cart-btn" id="cartBtn" aria-label="Abrir carrito">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="hero">
+      <h1 class="hero-title">P&G <span>Parfums</span></h1>
+      <p class="hero-subtitle">Tus fragancias favoritas, siempre cerca tuyo</p>
+    </section>
+
+    <section class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Marca</label>
+        <select class="filter-select" id="filterBrand">
+          <option value="">Todas las marcas</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Tipo</label>
+        <select class="filter-select" id="filterType">
+          <option value="">Todos los tipos</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Género</label>
+        <select class="filter-select" id="filterGender">
+          <option value="">Todos los géneros</option>
+        </select>
+      </div>
+
+      <div class="filter-reset">
+        <button class="reset-btn" id="resetFilters">Limpiar filtros</button>
+      </div>
+    </section>
+
+    <section class="products-grid" id="productsGrid">
+      <!-- Skeleton Loaders -->
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton skeleton-text title"></div>
+          <div class="skeleton skeleton-text medium"></div>
+          <div class="skeleton skeleton-button"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton skeleton-text title"></div>
+          <div class="skeleton skeleton-text medium"></div>
+          <div class="skeleton skeleton-button"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton skeleton-text title"></div>
+          <div class="skeleton skeleton-text medium"></div>
+          <div class="skeleton skeleton-button"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton skeleton-text title"></div>
+          <div class="skeleton skeleton-text medium"></div>
+          <div class="skeleton skeleton-button"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton skeleton-text title"></div>
+          <div class="skeleton skeleton-text medium"></div>
+          <div class="skeleton skeleton-button"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton skeleton-text title"></div>
+          <div class="skeleton skeleton-text medium"></div>
+          <div class="skeleton skeleton-button"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton skeleton-text title"></div>
+          <div class="skeleton skeleton-text medium"></div>
+          <div class="skeleton skeleton-button"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton skeleton-text title"></div>
+          <div class="skeleton skeleton-text medium"></div>
+          <div class="skeleton skeleton-button"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Cart Sidebar -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h2 class="cart-title">Tu Carrito</h2>
+      <button class="cart-close" id="cartClose" aria-label="Cerrar carrito">✕</button>
+    </div>
+    
+    <div class="cart-items" id="cartItems">
+      <!-- Cart items will be rendered here -->
+      <div class="cart-empty" id="cartEmpty">
+        <div class="cart-empty-icon">🛒</div>
+        <p>Tu carrito está vacío</p>
+      </div>
+    </div>
+
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span class="cart-total-label">Total</span>
+        <span class="cart-total-value" id="cartTotal">$0.00</span>
+      </div>
+      <button class="checkout-btn" id="checkoutBtn">Finalizar por WhatsApp</button>
+    </div>
+  </aside>
+
+  <!-- Notification -->
+  <div class="notification" id="notification">
+    <span class="notification-icon"></span>
+    <span class="notification-message"></span>
+  </div>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" id="backToTop" aria-label="Volver arriba">↑</button>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
