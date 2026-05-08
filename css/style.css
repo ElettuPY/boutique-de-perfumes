@@ -973,7 +973,7 @@ ul, ol {
 .notification {
   position: fixed;
   bottom: var(--spacing-xl);
-  right: var(--spacing-xl);
+  left: var(--spacing-xl);
   padding: var(--spacing-md) var(--spacing-xl);
   background: var(--color-white);
   color: var(--color-text);
