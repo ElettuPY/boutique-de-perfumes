@@ -7,7 +7,7 @@
 // CONFIGURACIÓN CRÍTICA - EDITAR AQUÍ
 // ============================================
 
-const API_URL = "https://script.google.com/macros/s/AKfycbzEEhlPUp_xGBauWMuT01XbMd7J3ChnYcpRkixpUupROrN27RP5mpfZk8r9T_jArtao/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx1isb9E_ddhXfWA8w2v4I4OcCy4sI-_iVULd6tkGlimZezHfd6KXM2LZd3rSzGixyF/exec";
 const WHATSAPP_PHONE = "595974666221"; // Formato internacional para Paraguay (595 + número)
 
 // ============================================
@@ -160,13 +160,13 @@ async function fetchInventory() {
       sku: row.sku || row.SKU || row.codigo || row.cod || row.id || '',
       name: row.nombre || row.Name || row.nombre_producto || row.producto || row.name || '',
       brand: row.marca || row.brand || row.Marca || row.marca_producto || '',
-      type: row.tipo || row.type || row.Tipo || row.tipo_producto || '',
+      type: row.tipo || row.type || row.Tipo || row.tipo_producto || row.tipo_de_producto || '',
       gender: row.genero || row.gender || row.Genero || row.sexo || '',
-      price: parseFloat(String(row.precio_venta || row.precio || row.price || row.Precio || 0).replace(/[^\d.,]/g, '').replace(',', '.')),
-      description: row.descripcion || row.description || row.Descripcion || '',
-      stock: parseInt(row.stock || row.Stock || 0),
+      price: parseFloat(String(row.precio_de_venta || row.precio_venta || row.precio || row.price || row.Precio || 0).replace(/[^\d.,]/g, '').replace(',', '.')),
+      description: row.descripcion || row.descripción || row.description || row.Descripcion || '',
+      stock: parseInt(row.stock_actual_auto || row.stock || row.Stock || 0),
       image: row.url_imagen || row.imagen || row.image || row.Imagen || '',
-      category: row.categoria || row.category || ''
+      category: row.categoría || row.categoria || row.category || ''
     })).filter(p => p.name && (p.sku || p.name)); // Filtrado menos estricto para depuración
 
     filteredProducts = [...allProducts];
