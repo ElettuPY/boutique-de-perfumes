@@ -7,7 +7,7 @@
 // CONFIGURACIÓN CRÍTICA - EDITAR AQUÍ
 // ============================================
 
-const API_URL = "https://script.google.com/macros/s/AKfycbw2oa063CsY194FTZ8gl24ATCmAGUKUP6rOUhsiw110oJp9r0hWcbTB1fJ5dF5s6HE/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzEEhlPUp_xGBauWMuT01XbMd7J3ChnYcpRkixpUupROrN27RP5mpfZk8r9T_jArtao/exec";
 const WHATSAPP_PHONE = "595974666221"; // Formato internacional para Paraguay (595 + número)
 
 // ============================================
@@ -120,35 +120,54 @@ async function fetchInventory() {
 
     const jsonData = await response.json();
 
-    // Verificar estructura del JSON
+    // Verificar estructura del JSON y normalizar a array de objetos
     let products = [];
     if (Array.isArray(jsonData)) {
-      products = jsonData;
+      if (jsonData.length > 0 && Array.isArray(jsonData[0])) {
+        // Es un array de arrays (resultado directo de getValues() en Apps Script)
+        const headers = jsonData[0].map(h => String(h).toLowerCase().trim());
+        products = jsonData.slice(1).map(row => {
+          const obj = {};
+          headers.forEach((header, index) => {
+            obj[header] = row[index];
+          });
+          return obj;
+        });
+      } else {
+        // Ya es un array de objetos
+        products = jsonData;
+      }
     } else if (jsonData.data && Array.isArray(jsonData.data)) {
       products = jsonData.data;
     } else if (jsonData.products && Array.isArray(jsonData.products)) {
       products = jsonData.products;
     } else {
-      throw new Error('Formato JSON no reconocido');
+      throw new Error('Formato JSON no reconocido. Se esperaba un array o un objeto con propiedad "data".');
     }
 
     if (products.length === 0) {
-      throw new Error('No se encontraron productos');
+      console.warn('El inventario está vacío.');
+      allProducts = [];
+      filteredProducts = [];
+      renderProducts([]);
+      hideLoading();
+      showNotification('ℹ️ El catálogo está vacío actualmente.', 'info');
+      return;
     }
 
-    // Mapear propiedades del JSON según los encabezados de tu planilla
+    // Mapear propiedades del JSON según los encabezados comunes
     allProducts = products.map(row => ({
-      sku: row.sku || row.SKU || row.codigo || row.cod || '',
-      name: row.nombre || row.Name || row.nombre_producto || row.producto || '',
+      sku: row.sku || row.SKU || row.codigo || row.cod || row.id || '',
+      name: row.nombre || row.Name || row.nombre_producto || row.producto || row.name || '',
       brand: row.marca || row.brand || row.Marca || row.marca_producto || '',
       type: row.tipo || row.type || row.Tipo || row.tipo_producto || '',
       gender: row.genero || row.gender || row.Genero || row.sexo || '',
-      price: parseFloat(row.precio_venta || row.precio || row.price || row.Precio || 0),
+      price: parseFloat(String(row.precio_venta || row.precio || row.price || row.Precio || 0).replace(/[^\d.,]/g, '').replace(',', '.')),
       description: row.descripcion || row.description || row.Descripcion || '',
       stock: parseInt(row.stock || row.Stock || 0),
-      image: row.url_imagen || row.imagen || row.image || row.Imagen || row.url_imagen || '',
+      image: row.url_imagen || row.imagen || row.image || row.Imagen || '',
       category: row.categoria || row.category || ''
-    })).filter(p => p.name && p.price > 0);
+    })).filter(p => p.name && (p.sku || p.name)); // Filtrado menos estricto para depuración
 
     filteredProducts = [...allProducts];
     
