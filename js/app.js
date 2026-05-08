@@ -165,7 +165,7 @@ async function fetchInventory() {
       price: parseFloat(String(row.precio_de_venta || row.precio_venta || row.precio || row.price || row.Precio || 0).replace(/[^\d.,]/g, '').replace(',', '.')),
       description: row.descripcion || row.descripción || row.description || row.Descripcion || '',
       stock: parseInt(row.stock_actual_auto || row.stock || row.Stock || 0),
-      image: row.url_imagen || row.imagen || row.image || row.Imagen || '',
+      url_imagen: row.url_imagen || row.imagen || row.image || row.Imagen || '',
       category: row.categoría || row.categoria || row.category || ''
     })).filter(p => p.name && (p.sku || p.name)); // Filtrado menos estricto para depuración
 
@@ -227,7 +227,7 @@ function createProductCard(product, index) {
         ${isOutOfStock ? '<span class="product-badge">Agotado</span>' : ''}
         <img 
           class="product-image" 
-          src="${product.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22><rect fill=%22%23f5f5f5%22 width=%22400%22 height=%22400%22/><text x=%22200%22 y=%22200%22 text-anchor=%22middle%22 fill=%22%23ccc%22 font-size=%2240%22>🌸</text></svg>'}" 
+          src="${product.url_imagen || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22><rect fill=%22%23f5f5f5%22 width=%22400%22 height=%22400%22/><text x=%22200%22 y=%22200%22 text-anchor=%22middle%22 fill=%22%23ccc%22 font-size=%2240%22>🌸</text></svg>'}" 
           alt="${product.name}"
           loading="lazy"
         >
@@ -371,7 +371,7 @@ function addToCart(sku) {
       name: product.name,
       brand: product.brand,
       price: product.price,
-      image: product.image,
+      url_imagen: product.url_imagen,
       quantity: 1,
       stock: product.stock
     });
@@ -470,7 +470,7 @@ function updateCartUI() {
 function createCartItem(item) {
   return `
     <div class="cart-item">
-      <img class="cart-item-image" src="${item.image || ''}" alt="${item.name}">
+      <img class="cart-item-image" src="${item.url_imagen || ''}" alt="${item.name}">
       <div class="cart-item-details">
         <h4 class="cart-item-name">${item.name}</h4>
         <p class="cart-item-brand">${item.brand}</p>
