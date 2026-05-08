@@ -18,6 +18,7 @@ let allProducts = [];
 let filteredProducts = [];
 let cart = JSON.parse(localStorage.getItem('pg_cart')) || [];
 let isLoading = true;
+let imageUrlCache = new Map();
 
 // ============================================
 // DOM Elements
@@ -195,24 +196,42 @@ function renderProducts(products) {
     return;
   }
 
-  productsGrid.innerHTML = products.map((product, index) => createProductCard(product, index)).join('');
+  const fragment = document.createDocumentFragment();
+  products.forEach((product, index) => {
+    const card = document.createRange().createContextualFragment(createProductCard(product, index));
+    fragment.appendChild(card);
+  });
+  productsGrid.innerHTML = '';
+  productsGrid.appendChild(fragment);
 
-  // Add lazy loading and error fallback for images
+  setupLazyLoading();
+  
+  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const sku = e.target.dataset.sku;
+      addToCart(sku);
+    });
+  });
+}
+
+function setupLazyLoading() {
+  const imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.classList.add('loaded');
+        observer.unobserve(img);
+      }
+    });
+  }, { rootMargin: '50px' });
+
   document.querySelectorAll('.product-image').forEach(img => {
     img.addEventListener('load', () => img.classList.add('loaded'));
     img.addEventListener('error', () => {
       img.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22><rect fill=%22%23f5f5f5%22 width=%22400%22 height=%22400%22/><text x=%22200%22 y=%22200%22 text-anchor=%22middle%22 fill=%22%23ccc%22 font-size=%2240%22>🌸</text></svg>';
       img.classList.add('loaded');
     });
-    if (img.complete) img.classList.add('loaded');
-  });
-
-  // Add click handlers for add to cart buttons
-  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const sku = e.target.dataset.sku;
-      addToCart(sku);
-    });
+    imageObserver.observe(img);
   });
 }
 
@@ -429,12 +448,10 @@ function saveCart() {
 }
 
 function updateCartUI() {
-  // Update badge
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   cartBadge.textContent = totalItems;
   cartBadge.classList.toggle('visible', totalItems > 0);
 
-  // Update cart items
   if (cart.length === 0) {
     cartItems.innerHTML = `
       <div class="cart-empty">
@@ -444,10 +461,15 @@ function updateCartUI() {
     `;
     checkoutBtn.disabled = true;
   } else {
-    cartItems.innerHTML = cart.map(item => createCartItem(item)).join('');
+    const fragment = document.createDocumentFragment();
+    cart.forEach(item => {
+      const div = document.createRange().createContextualFragment(createCartItem(item));
+      fragment.appendChild(div);
+    });
+    cartItems.innerHTML = '';
+    cartItems.appendChild(fragment);
     checkoutBtn.disabled = false;
 
-    // Add event listeners to cart buttons
     document.querySelectorAll('.quantity-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const sku = e.target.dataset.sku;
@@ -464,7 +486,6 @@ function updateCartUI() {
     });
   }
 
-  // Update total
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   cartTotal.textContent = formatPrice(total);
 }
@@ -548,14 +569,19 @@ function generateWhatsAppMessage() {
 
 function formatDriveUrl(url) {
   if (!url) return '';
+  if (imageUrlCache.has(url)) return imageUrlCache.get(url);
+  
+  let cachedUrl;
   if (url.includes('drive.google.com') || url.includes('doc.google.com')) {
     const match = url.match(/[?&]id=([^&]+)|\/d\/([^/]+)|\/file\/d\/([^/]+)/);
     if (match) {
       const fileId = match[1] || match[2] || match[3];
-      return `https://drive.google.com/thumbnail?id=${fileId}&authuser=0&t=${Date.now()}`;
+      cachedUrl = `https://drive.google.com/thumbnail?id=${fileId}&w=400&authuser=0`;
     }
   }
-  return url + (url.includes('?') ? '&' : '?') + 'authuser=0&t=' + Date.now();
+  cachedUrl = cachedUrl || url;
+  imageUrlCache.set(url, cachedUrl);
+  return cachedUrl;
 }
 
 function formatPrice(price) {
@@ -566,17 +592,13 @@ function formatPrice(price) {
   }).format(price);
 }
 
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+const debounce = (func, wait) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), wait);
   };
-}
+};
 
 function showNotification(message, type = 'info') {
   const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
